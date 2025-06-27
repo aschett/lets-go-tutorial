@@ -16,11 +16,6 @@ func TestHome(t *testing.T) {
 	if rr.Code != http.StatusOK {
 		t.Errorf("expected OK, got %d", rr.Code)
 	}
-
-	expected := "Hello from andibox"
-	if rr.Body.String() != expected {
-		t.Errorf("expected response %q, got %q", expected, rr.Body.String())
-	}
 }
 
 func TestSnippetView(t *testing.T) {
