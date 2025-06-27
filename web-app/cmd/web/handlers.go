@@ -14,6 +14,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	files := []string{
 		"./ui/html/base.tmpl",
 		"./ui/html/pages/home.tmpl",
+		"./ui/html/partials/nav.tmpl",
 	}
 
 	// The three dots basically slice the list into individual arguments. Wasn't said in the book so note for myself
