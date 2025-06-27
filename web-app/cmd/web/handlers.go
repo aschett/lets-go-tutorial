@@ -11,7 +11,13 @@ import (
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Server", "Go")
 
-	ts, err := template.ParseFiles("./ui/html/pages/home.tmpl")
+	files := []string{
+		"./ui/html/base.tmpl",
+		"./ui/html/pages/home.tmpl",
+	}
+
+	// The three dots basically slice the list into individual arguments. Wasn't said in the book so note for myself
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
