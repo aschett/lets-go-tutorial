@@ -17,7 +17,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 		"./ui/html/partials/nav.tmpl",
 	}
 
-	// The three dots basically slice the list into individual arguments. Wasn't said in the book so note for myself
+	//The three dots basically slice the list into individual arguments. Wasn't said in the book so note for myself
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print(err.Error())
