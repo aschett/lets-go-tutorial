@@ -8,13 +8,16 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/aschett/lets-go-tutorial/internal/models"
+
 	// Apparently this is common usage for sql drivers in go to surpress compile errors because the package is not even used but only specific function
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/term"
 )
 
 type application struct {
-	logger *slog.Logger
+	logger   *slog.Logger
+	snippets *models.SnippetModel
 }
 
 func main() {
