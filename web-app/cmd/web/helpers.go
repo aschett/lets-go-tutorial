@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
 type neuteredFileSystem struct {
@@ -70,4 +71,10 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 	w.WriteHeader(status)
 
 	buf.WriteTo(w)
+}
+
+func (app *application) newTemplateData(r *http.Request) templateData {
+	return templateData{
+		CurrentYear: time.Now().Year(),
+	}
 }
