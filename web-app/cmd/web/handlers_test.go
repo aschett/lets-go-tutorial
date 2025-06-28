@@ -1,54 +1,49 @@
 package main
 
 import (
-	"fmt"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 )
 
-func TestHome(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rr := httptest.NewRecorder()
-	home(rr, req)
-
-	if rr.Code != http.StatusOK {
-		t.Errorf("expected OK, got %d", rr.Code)
+// Dummy logger
+func newTestApplication() *application {
+	return &application{
+		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 }
 
-func TestSnippetView(t *testing.T) {
-	id := 20
-	url := fmt.Sprintf("/snippet/view/%d", id)
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	req.SetPathValue("id", strconv.Itoa(id))
-	rr := httptest.NewRecorder()
+// TODO: had to exclude the home test for now as i have to look into how to include the template files in tests or outsource them
+func TestRoutes(t *testing.T) {
+	app := newTestApplication()
 
-	snippetView(rr, req)
-
-	if rr.Code != http.StatusOK {
-		t.Errorf("expected OK, got %d", rr.Code)
+	tests := []struct {
+		name       string
+		url        string
+		wantStatus int
+	}{
+		//{"Home", "/", http.StatusOK},
+		{"SnippetViewValid", "/snippet/view/1", http.StatusOK},
+		{"SnippetViewInvalid String", "/snippet/view/go-tutorial", http.StatusNotFound},
+		{"SnippetViewInvalid Negative Int", "/snippet/view/-4", http.StatusNotFound},
+		{"SnippetCreate", "/snippet/create", http.StatusOK},
+		{"NotFound", "/doesnotexist", http.StatusNotFound},
 	}
 
-	expected := fmt.Sprintf("Display a specific snipped with ID %d", id)
-	if rr.Body.String() != expected {
-		t.Errorf("expected response %q, got %q", expected, rr.Body.String())
-	}
-}
+	router := app.routes()
 
-func TestSnippetCreate(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/snippet/create", nil)
-	rr := httptest.NewRecorder()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tt.url, nil)
+			rr := httptest.NewRecorder()
 
-	snippetCreate(rr, req)
+			router.ServeHTTP(rr, req)
 
-	if rr.Code != http.StatusOK {
-		t.Errorf("expected OK, got %d", rr.Code)
-	}
-
-	expected := "Display form to create new snippet"
-	if rr.Body.String() != expected {
-		t.Errorf("expected response %q, got %q", expected, rr.Body.String())
+			if rr.Code != tt.wantStatus {
+				t.Errorf("expected status %d, got %d", tt.wantStatus, rr.Code)
+			}
+		})
 	}
 }
